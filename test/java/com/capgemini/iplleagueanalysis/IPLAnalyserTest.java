@@ -173,4 +173,15 @@ public class IPLAnalyserTest {
 		}
 	}
 
+	@Test
+	public void givenrunsCsvDataShouldReturnMaxHundredsWithBestAvg() {
+		try {
+			iplAnalyser.loadRunsData(PLAYER_RUNS_DATA);
+			String playerName = iplAnalyser.getMaxHundredsWithBestAvg();
+			assertEquals("David Warner", playerName);
+		} catch (IPLAnalyserException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

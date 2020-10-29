@@ -120,6 +120,14 @@ public class IPLAnalyser {
 		return getBowlerName();
 	}
 
+	public String getMaxWktsWithBestAvg() throws IPLAnalyserException {
+		checkForBowlerData();
+		bowlerComparator = Comparator.comparing(s -> s.fourWickets + s.fiveWickets);
+		bowlerComparator = bowlerComparator.reversed();
+		bowlerComparator = bowlerComparator.thenComparing(IPLBowling::getAverage);
+		return getBowlerName();
+	}
+
 	private String getBatsmanName() {
 		this.sortBatsmenData(runsComparator);
 		Collections.reverse(playerRunsList);

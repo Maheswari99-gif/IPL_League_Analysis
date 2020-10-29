@@ -138,4 +138,15 @@ public class IPLAnalyserTest {
 		}
 	}
 
+	@Test
+	public void givenWktsCsvDataShouldReturnMaxWktsWithBestBowlingAvg() {
+		try {
+			iplAnalyser.loadWktsData(PLAYER_WKTS_DATA);
+			String playerName = iplAnalyser.getMaxWktsWithBestAvg();
+			assertEquals("Kagiso Rabada", playerName);
+		} catch (IPLAnalyserException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

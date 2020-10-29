@@ -2,7 +2,7 @@ package com.capgemini.iplleagueanalysis;
 
 import com.opencsv.bean.CsvBindByName;
 
-public class PlayerRuns {
+public class IPLBatting {
 	
 	
 	@CsvBindByName(column = "POS", required = true)

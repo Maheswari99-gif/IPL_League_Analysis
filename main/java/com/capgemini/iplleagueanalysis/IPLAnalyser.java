@@ -15,6 +15,7 @@ public class IPLAnalyser {
 
 	List<IPLBatting> playerRunsList = null;
 	private Comparator<IPLBatting> censusComparator;
+	private Comparator<IPLBatting> runsComparator;
 
 	public void loadRunsData(String filePath) throws IPLAnalyserException {
 		try {
@@ -68,6 +69,18 @@ public class IPLAnalyser {
 		censusComparator = Comparator.comparing(s -> s.sixes + s.fours);
 		censusComparator = censusComparator.thenComparing(s -> s.strikeRate);
 		this.sortBatsmenData(censusComparator);
+		Collections.reverse(playerRunsList);
+		return playerRunsList.get(0).player;
+	}
+
+	public String getGreatAvgwithBestStrickRate() throws IPLAnalyserException {
+		checkForData();
+		runsComparator = Comparator.comparing(IPLBatting::getAverage).thenComparing(s -> s.strikeRate);
+		return getBatsmanName();
+	}
+
+	private String getBatsmanName() {
+		this.sortBatsmenData(runsComparator);
 		Collections.reverse(playerRunsList);
 		return playerRunsList.get(0).player;
 	}

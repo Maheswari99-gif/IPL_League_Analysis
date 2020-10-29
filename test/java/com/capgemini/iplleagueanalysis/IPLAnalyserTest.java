@@ -60,4 +60,15 @@ public class IPLAnalyserTest {
 		}
 	}
 
+	@Test
+	public void givenCsvDataShouldReturnPlayewithGreatAvgrwithBestStrikeRate() {
+		try {
+			iplAnalyser.loadRunsData(PLAYER_RUNS_DATA);
+			String playerName = iplAnalyser.getGreatAvgwithBestStrickRate();
+			assertEquals("MS Dhoni", playerName);
+		} catch (IPLAnalyserException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -3,8 +3,7 @@ package com.capgemini.iplleagueanalysis;
 import com.opencsv.bean.CsvBindByName;
 
 public class IPLBatting {
-	
-	
+
 	@CsvBindByName(column = "POS", required = true)
 	public int pos;
 	@CsvBindByName(column = "PLAYER", required = true)
@@ -33,5 +32,11 @@ public class IPLBatting {
 	public int fours;
 	@CsvBindByName(column = "6s", required = true)
 	public int sixes;
-	
+
+	public Double getAverage() {
+		if (!average.equals("-"))
+			return Double.parseDouble(average);
+		return 0.0;
+	}
+
 }

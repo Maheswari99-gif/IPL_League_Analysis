@@ -42,4 +42,14 @@ public class IPLAnalyser {
 		return player.get(0).player;
 	}
 
+	public String getTopStrikeRate() throws IPLAnalyserException {
+		if (playerRunsList == null || playerRunsList.size() == 0) {
+			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
+		}
+		double maxStrikeRate = playerRunsList.stream().map(s -> s.strikeRate).max(Double::compare).get();
+		List<IPLBatting> player = playerRunsList.stream().filter(s -> s.strikeRate == maxStrikeRate)
+				.collect(Collectors.toList());
+		return player.get(0).player;
+	}
+
 }

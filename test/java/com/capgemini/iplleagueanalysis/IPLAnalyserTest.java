@@ -38,4 +38,15 @@ public class IPLAnalyserTest {
 		}
 	}
 
+	@Test
+	public void givenCsvDataShouldReturnPlayerwithMax6sand4s() {
+		try {
+			iplAnalyser.loadRunsData(PLAYER_RUNS_DATA);
+			String playerName = iplAnalyser.getMaximum6sAnd4s();
+			assertEquals("Andre Russell", playerName);
+		} catch (IPLAnalyserException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

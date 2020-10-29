@@ -99,6 +99,12 @@ public class IPLAnalyser {
 		return getBowlerName();
 	}
 
+	public String getBestEconomy() throws IPLAnalyserException {
+		checkForBowlerData();
+		bowlerComparator = Comparator.comparing(s -> s.economy);
+		return getBowlerName();
+	}
+
 	private String getBatsmanName() {
 		this.sortBatsmenData(runsComparator);
 		Collections.reverse(playerRunsList);

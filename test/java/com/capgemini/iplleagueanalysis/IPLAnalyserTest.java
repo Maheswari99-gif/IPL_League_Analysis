@@ -149,4 +149,16 @@ public class IPLAnalyserTest {
 		}
 	}
 
+	@Test
+	public void givenWktsCsvDataShouldReturnBestBattingAvgBestBowlingAvg() {
+		try {
+			iplAnalyser.loadRunsData(PLAYER_RUNS_DATA);
+			iplAnalyser.loadWktsData(PLAYER_WKTS_DATA);
+			String playerName = iplAnalyser.getBestBattingAvgBestBowlingAvg();
+			assertEquals("Andre Russell", playerName);
+		} catch (IPLAnalyserException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

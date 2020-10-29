@@ -14,8 +14,9 @@ import com.capgemini.csvbuilder.ICsvBuilder;
 public class IPLAnalyser {
 
 	List<IPLBatting> playerRunsList = null;
-	private Comparator<IPLBatting> censusComparator;
 	private Comparator<IPLBatting> runsComparator;
+	private List<IPLBowling> bowlerDataList = null;
+	private Comparator<IPLBowling> bowlerComparator;
 
 	public void loadRunsData(String filePath) throws IPLAnalyserException {
 		try {
@@ -33,44 +34,44 @@ public class IPLAnalyser {
 
 	}
 
-	public String getTopBattingAvg() throws IPLAnalyserException {
-		if (playerRunsList == null || playerRunsList.size() == 0) {
-			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
+	public void loadWktsData(String filePath) throws IPLAnalyserException {
+		try (Reader reader = Files.newBufferedReader(Paths.get(filePath));) {
+			new CsvBuilderFactory();
+			ICsvBuilder csvBuilderCustom = CsvBuilderFactory.createBuilderCommons();
+
+			bowlerDataList = csvBuilderCustom.getCSVFileList(reader, IPLBowling.class);
+
+		} catch (IOException e) {
+			throw new IPLAnalyserException(e.getMessage(), IPLAnalyserException.Exception.INCORRECT_FILE);
+		} catch (BuilderException e) {
+			throw new IPLAnalyserException(e.getMessage(), e.type.name());
 		}
-		double max = playerRunsList.stream().filter(s -> !s.average.equals("-")).map(s -> Double.parseDouble(s.average))
-				.max(Double::compare).get();
-		List<IPLBatting> player = playerRunsList.stream().filter(s -> s.average.equals(Double.toString(max)))
-				.collect(Collectors.toList());
-		return player.get(0).player;
+
+	}
+
+	public String getTopBattingAvg() throws IPLAnalyserException {
+		checkForData();
+		runsComparator = Comparator.comparing(IPLBatting::getAverage);
+		return getBatsmanName();
 	}
 
 	public String getTopStrikeRate() throws IPLAnalyserException {
-		if (playerRunsList == null || playerRunsList.size() == 0) {
-			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
-		}
-		double maxStrikeRate = playerRunsList.stream().map(s -> s.strikeRate).max(Double::compare).get();
-		List<IPLBatting> player = playerRunsList.stream().filter(s -> s.strikeRate == maxStrikeRate)
-				.collect(Collectors.toList());
-		return player.get(0).player;
+		checkForData();
+		runsComparator = Comparator.comparing(s -> s.strikeRate);
+		return getBatsmanName();
 	}
 
 	public String getMaximum6sAnd4s() throws IPLAnalyserException {
-		if (playerRunsList == null || playerRunsList.size() == 0) {
-			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
-		}
-		int maxSixesAndFours = playerRunsList.stream().map(s -> s.sixes + s.fours).max(Integer::compare).get();
-		List<IPLBatting> player = playerRunsList.stream().filter(s -> s.sixes + s.fours == maxSixesAndFours)
-				.collect(Collectors.toList());
-		return player.get(0).player;
+		checkForData();
+		runsComparator = Comparator.comparing(s -> s.sixes + s.fours);
+		return getBatsmanName();
 	}
 
 	public String getBestStrickRateMaximum6sAnd4s() throws IPLAnalyserException {
 		checkForData();
-		censusComparator = Comparator.comparing(s -> s.sixes + s.fours);
-		censusComparator = censusComparator.thenComparing(s -> s.strikeRate);
-		this.sortBatsmenData(censusComparator);
-		Collections.reverse(playerRunsList);
-		return playerRunsList.get(0).player;
+		runsComparator = Comparator.comparing(s -> s.sixes + s.fours);
+		runsComparator = runsComparator.thenComparing(s -> s.strikeRate);
+		return getBatsmanName();
 	}
 
 	public String getGreatAvgwithBestStrickRate() throws IPLAnalyserException {
@@ -86,14 +87,31 @@ public class IPLAnalyser {
 		return getBatsmanName();
 	}
 
+	public String getTopBowlingAvg() throws IPLAnalyserException {
+		checkForBowlerData();
+		bowlerComparator = Comparator.comparing(IPLBowling::getAverage);
+		return getBowlerName();
+	}
+
 	private String getBatsmanName() {
 		this.sortBatsmenData(runsComparator);
 		Collections.reverse(playerRunsList);
 		return playerRunsList.get(0).player;
 	}
 
-	public void checkForData() throws IPLAnalyserException {
+	private void checkForData() throws IPLAnalyserException {
 		if (playerRunsList == null || playerRunsList.size() == 0) {
+			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
+		}
+	}
+
+	private String getBowlerName() {
+		this.sortBowlerData(bowlerComparator);
+		return bowlerDataList.get(0).player;
+	}
+
+	private void checkForBowlerData() throws IPLAnalyserException {
+		if (bowlerDataList == null || bowlerDataList.size() == 0) {
 			throw new IPLAnalyserException("No Census Data", IPLAnalyserException.Exception.NO_CENSUS_DATA);
 		}
 	}
@@ -109,6 +127,19 @@ public class IPLAnalyser {
 				}
 			}
 		}
-
 	}
+
+	private void sortBowlerData(Comparator<IPLBowling> comparator) {
+		for (int i = 0; i < bowlerDataList.size() - 1; i++) {
+			for (int j = 0; j < bowlerDataList.size() - i - 1; j++) {
+				IPLBowling census1 = bowlerDataList.get(j);
+				IPLBowling census2 = bowlerDataList.get(j + 1);
+				if (comparator.compare(census1, census2) > 0) {
+					bowlerDataList.set(j, census2);
+					bowlerDataList.set(j + 1, census1);
+				}
+			}
+		}
+	}
+
 }
